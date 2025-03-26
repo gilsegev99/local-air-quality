@@ -1,0 +1,51 @@
+name: Terraform CI
+
+# Trigger the workflow on push and pull requests to main
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'terraform/**'
+  pull_request:
+    branches: [main]
+  
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    name: Terraform Validation & Plan
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out the code from the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Set up Terraform CLI
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.11.2  
+
+      # Initialise Terraform (downloads provider plugins)
+      - name: Initialise Terraform
+        run: terraform init
+        working-directory: ./terraform
+
+      # Validate Terraform configuration
+      - name: Validate Terraform configuration
+        run: terraform validate
+        working-directory: ./terraform
+
+      # Check Terraform formatting (ensure code is properly formatted)
+      - name: Check Terraform formatting
+        run: terraform fmt -check -recursive
+        working-directory: ./terraform
+
+      # Run Terraform Plan (dry-run of changes)
+      - name: Terraform Plan
+        run: terraform plan -no-color
+        working-directory: ./terraform
+
