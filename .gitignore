@@ -2,3 +2,11 @@ commands
 
 # Terraform
 terraform/*terraform*
+
+venv/
+
+# Airflow
+airflow/logs
+airflow/config
+airflow/plugins
+airflow/dags/__pycache__
