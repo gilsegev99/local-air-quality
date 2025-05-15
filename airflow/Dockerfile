@@ -20,10 +20,12 @@ SHELL ["/bin/bash", "-o", "pipefail", "-e", "-u", "-x", "-c"]
 USER root
 RUN apt-get update -qq && apt-get install vim -qqq
 
+USER ${AIRFLOW_UID}
 RUN pip install --upgrade pip
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+USER root
 ARG CLOUD_SDK_VERSION=517.0.0
 ENV GCLOUD_HOME=/opt/google-cloud-sdk
 

@@ -1,16 +1,18 @@
 import os
-from airflow.decorators import dag, task
-
 from datetime import datetime, timedelta
+import logging
+
 import pytz
 import requests
 import pandas as pd
 import pyarrow.parquet as pq
 from google.cloud import storage
-
+from airflow.decorators import dag, task
 
 API_KEY = os.getenv("API_KEY")
 GCS_BUCKET = "local-air-quality-bucket"
+
+logger = logging.getLogger(__name__)
 
 def get_current_time():
     # Get current time
@@ -39,7 +41,7 @@ def format_response(coords, body):
         'co': float(components['co']),
         'no': float(components['no']),
         'no2': float(components['no2']),
-        'o3': float(components['o3']),
+        'o3': float(components['o3']), 
         'so2': float(components['so2']),
         'pm2_5': float(components['pm2_5']),
         'pm10': float(components['pm10']),
@@ -58,54 +60,69 @@ default_args = {
 }
 
 NOW = get_current_time()
-START = datetime_to_utcunix(datetime(2020, 1, 1))
-LOCATION_LIST = pd.read_csv("/home/src/location_list.csv")
+# API Data available from 2020/11/27
+START = datetime_to_utcunix(datetime(2020, 12, 1))
+AIRFLOW_HOME = os.getenv("AIRFLOW_HOME")
+LOCATION_LIST = pd.read_csv(f"{AIRFLOW_HOME}/data/location_list.csv")
 
 @dag(
     default_args=default_args,
-    schedule_interval="@daily",
+    schedule=None,
+    catchup=False
 )
 def openweather_to_gcs():
 
     @task
-    def fetch_api_data(start_date, end_date, api_key, **kwargs):
+    def fetch_api_data(start, end, api_key, **kwargs):
         dfs = []
         files = []
 
         for index, row in LOCATION_LIST.iterrows():
             lat = row['Latitude']
             lon = row['Longitude']
-            api_url = f"http://api.openweathermap.org/data/2.5/air_pollution/history?lat={lat}&lon={lon}&start={start_date}&end={end_date}&appid={api_key}"
+            location = row['Location']
 
-            response = requests.get(api_url)
-            data = response.json()
+            api_url = f"http://api.openweathermap.org/data/2.5/air_pollution/history?lat={lat}&lon={lon}&start={start}&end={end}&appid={api_key}"
 
-            df = pd.DataFrame([format_response(data['coord'], datapoint) for datapoint in data['list']])
-            dfs.append(df)
+            try:
+                logger.info(f"Requesting data for {location}")
+                logger.info(f"Using API Key: {api_key}")
+                response = requests.get(api_url)
+                response.raise_for_status()
 
-            file_name = f"pollution_data_{row['Location']}_{start_date}-{end_date}"
-            files.append(file_name)
+                data = response.json()
+
+                if 'list' not in data:
+                    logger.warning(f"Data unavailable for {location}")
+
+                df = pd.DataFrame([format_response(data['coord'], datapoint) for datapoint in data['list']])
+                dfs.append(df)
+
+                file_name = f"pollution_data_{location}_{start}-{end}"
+                files.append(file_name)
+
+                logger.info(f"Successfully retrieved {len(df)} records for {location}")
+            
+            except requests.exceptions.HTTPError as http_err:
+                logger.error(f"HTTP error for {location}: {http_err}") 
 
         return dfs, files
 
-
     @task
-    def convert_to_pq(dataframes, filenames):
+    def convert_to_pq(objects):
+        dataframes, filenames = objects
         file_paths = []
 
-        # data, files = fetch_api_data()
-
-        if len(dataframes) != len(files):
+        if len(dataframes) != len(filenames):
             return None
-
-        for i in len(dataframes):
-            file_path = f"tmp/{files[i]}.parquet"
+        
+        for i in range(len(dataframes)):
+            file_path = f"{AIRFLOW_HOME}/tmp/{filenames[i]}.parquet"
             dataframes[i].to_parquet(file_path, engine="pyarrow")
             file_paths.append(file_path)
         
         return file_paths
         
-
     @task
     def upload_to_gcs(file_paths, **kwargs):
         client = storage.Client()
@@ -120,9 +137,9 @@ def openweather_to_gcs():
 
     # Set task dependencies
 
-    dataframes, filenames = fetch_api_data(START, NOW, API_KEY)
-    file_paths = convert_to_pq(dataframes,filenames)
+    objects = fetch_api_data(START, NOW, API_KEY)
+    file_paths = convert_to_pq(objects)
     upload_to_gcs(file_paths)
 
-extract_data = openweather_to_gcs()  
+extract_data = openweather_to_gcs()
 
