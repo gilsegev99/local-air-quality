@@ -37,6 +37,8 @@ clean-targets:         # directories to be removed by `dbt clean`
 
 models:
   local_air_quality:
-    # Applies to all files under models/example/
-    example:
-      +materialized: table
+      # Applies to all files under models/.../
+      staging:
+          materialized: view
+      core:
+          materialized: table
