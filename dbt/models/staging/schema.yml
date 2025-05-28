@@ -26,6 +26,8 @@ models:
                     severity: warn
                 - not_null:
                     severity: warn
+          - name: location
+            description: Location name
           - name: lon
             description: Longitude            
           - name: lat 
@@ -62,6 +64,8 @@ models:
                     severity: warn
                 - not_null:
                     severity: warn
+          - name: location
+            description: Location name
           - name: lon
             description: Longitude            
           - name: lat 
@@ -99,6 +103,8 @@ models:
                     severity: warn
                 - not_null:
                     severity: warn
+          - name: location
+            description: Location name
           - name: lon
             description: Longitude            
           - name: lat 
@@ -136,6 +142,8 @@ models:
                     severity: warn
                 - not_null:
                     severity: warn
+          - name: location
+            description: Location name
           - name: lon
             description: Longitude            
           - name: lat 
