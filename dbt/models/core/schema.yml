@@ -1,0 +1,79 @@
+
+version: 2
+
+models:
+    - name: fct_pollution_data
+      description: >
+        Pollutant levels over time for various locations.
+      columns:
+          - name: measurementid
+            description: The primary key for this table, determined by the location, latitude, longitude and measurement time.
+            tests:
+                - unique:
+                    severity: warn
+                - not_null:
+                    severity: warn
+          - name: location
+            description: Location name                 
+          - name: lon
+            description: Longitude            
+          - name: lat 
+            description: Latitude
+          - name: measurement_time
+            description: The time of the measurement as a datetime stamp    
+          - name: aqi 
+            description: The Air Quality Index from 1-5. 1 represents the cleanest air.
+          - name: co 
+            description: Carbon monoxide concentration in μg/m3
+          - name: 'no'
+            description: Nitrogen monoxide concentration in μg/m3
+          - name: no2 
+            description: Nitrogen dioxide concentration in μg/m3
+          - name: o3
+            description: Ozone concentration in μg/m3
+          - name: so2 
+            description: Sulphur dioxide concentration in μg/m3        
+          - name: pm2_5
+            description: PM2.5 (particulate matter <= 2.5μm in diameter) concentration in μg/m3
+          - name: pm10
+            description: PM10 (particulate matter <= 10μm in diameter) concentration in μg/m3
+          - name: nh3
+            description: Ammonia concentration in μg/m3
+
+    - name: pct_change_from_prev_year
+      description: >
+        A table showing, for each pollutant in each location, the percentage change in pollutant level between the latest recorded day and the same day
+        in the previous year.
+      columns:          
+          - name: location
+            description: Location name         
+          - name: latest_day
+            description: The most recent full day of measurements that exists for the location.
+          - name: co_pct_change 
+            description: Percentage change in carbon monoxide concentration
+          - name: no_pct_change
+            description: Percentage change in nitrogen monoxide concentration
+          - name: no2_pct_change 
+            description: Percentage change in nitrogen dioxide concentration
+          - name: o3_pct_change
+            description: Percentage change in ozone concentration
+          - name: so2_pct_change 
+            description: Percentage change in sulphur dioxide concentration
+          - name: pm2_5_pct_change
+            description: Percentage change in PM2.5 (particulate matter <= 2.5μm in diameter) concentration
+          - name: pm10_pct_change
+            description: Percentage change in PM10 (particulate matter <= 10μm in diameter) concentration
+          - name: nh3_pct_change
+            description: Percentage change in ammonia concentration
+
+    - name: daily_pollution
+      description: >
+        A table showing the average pollution level per day for each pollutant in each location.
+      columns:
+          - name: date            
+          - name: location
+            description: Location name        
+          - name: pollutant 
+            description: Pollutant name
+          - name: daily_avg
+            description: Average pollution level per day
