@@ -64,4 +64,16 @@ models:
           - name: pm10_pct_change
             description: Percentage change in PM10 (particulate matter <= 10μm in diameter) concentration
           - name: nh3_pct_change
-            description: Percentage change in ammonia concentration  
+            description: Percentage change in ammonia concentration
+
+    - name: daily_pollution
+      description: >
+        A table showing the average pollution level per day for each pollutant in each location.
+      columns:
+          - name: date            
+          - name: location
+            description: Location name        
+          - name: pollutant 
+            description: Pollutant name
+          - name: daily_avg
+            description: Average pollution level per day
