@@ -13,7 +13,7 @@ select
     -- identifiers
     {{ dbt_utils.generate_surrogate_key(['location', 'lon', 'lat', 'time']) }} as measurementid,
     location,
-    
+
     -- measurement parameters
     {{ dbt.safe_cast("lon", api.Column.translate_type("float")) }} as lon,
     {{ dbt.safe_cast("lat", api.Column.translate_type("float")) }} as lat,

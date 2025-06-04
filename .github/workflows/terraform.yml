@@ -8,7 +8,7 @@ on:
       - 'terraform/**'
   pull_request:
     branches: [main]
-  
+
 
 permissions:
   contents: read
@@ -27,7 +27,7 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.11.2  
+          terraform_version: 1.11.2
 
       # Initialise Terraform (downloads provider plugins)
       - name: Initialise Terraform
@@ -48,4 +48,3 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -no-color
         working-directory: ./terraform
-

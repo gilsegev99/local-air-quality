@@ -40,23 +40,23 @@ This project can be modified to extract and analyse data for any location to sui
 
 ## Data Flow Summary
 
-1. **Ingestion**  
+1. **Ingestion**
    - Airflow DAGs fetch air quality metrics (e.g. PM2.5, PM10, NO₂) as JSON data from the OpenWeather API.
    - Data is serialised and stored in **Google Cloud Storage** as parquet files.
 
-2. **Transformation**  
+2. **Transformation**
    - `dbt` models raw data within **BigQuery**, applying logic like deduplication, enrichment, and timestamp conversion.
-   
+
 ![DBT Lineage](./docs/local_air_quality_dbt_lineage.png)
 
-3. **Visualisation**  
+3. **Visualisation**
    - Cleaned datasets are explored using **Looker Studio**, enabling analysis by location, pollutant, and time.
 
 ![Looker Studio Dashboard](./docs/dashboard.png)
 
 ---
 
-## 
+##
 
 Instructions for setting up the environment, deploying infrastructure with Terraform, running Airflow, and managing dbt models will be provided in the Setup section below.
 
@@ -67,7 +67,7 @@ Instructions for setting up the environment, deploying infrastructure with Terra
 - Build tables incrementally instead of a full data refresh.
 - Schedule hourly pipline runs to update the dashboard in line with the API data frequency.
 - Encompass DBT transformation in Airflow DAG.
-- Add data quality tests e.g. anomaly detection and threshold-based alerts. 
+- Add data quality tests e.g. anomaly detection and threshold-based alerts.
 - Implement CI/CD for pipeline updates.
 - Allow for more seamless changes to air quality measurment locations.
 - Enrich data with local weather information.
@@ -92,17 +92,17 @@ The following instructions can be performed in any Ubuntu distribution. I used a
 Clone the repository in your local machine.
 
 ```bash
-git clone https://github.com/gilsegev99/local-air-quality.git 
+git clone https://github.com/gilsegev99/local-air-quality.git
 ```
 
 If you already have a Google Cloud account and a working terraform setup, you can skip the pre-requisite steps.
 
-- Google Cloud Platform. 
+- Google Cloud Platform.
   - [GCP Account and Access Setup](setup/gcp.md)
 
 
 - Procure infra on GCP with Terraform - [Setup](setup/terraform.md)
- 
+
 # Setup Infrastructure
 
 #### [Setup Reference - Ankur Chavda](https://github.com/ankurchavda/streamify/README.md)

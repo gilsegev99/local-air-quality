@@ -1,6 +1,6 @@
 variable "credentials" {
   description = "Local Air Quality Credentials"
-  default     = "/home/gilsegev/keys/local-air-quality.json"  
+  default     = "/home/gilsegev/keys/local-air-quality.json"
 }
 
 

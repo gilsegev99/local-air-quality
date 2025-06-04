@@ -29,29 +29,29 @@ models:
           - name: location
             description: Location name
           - name: lon
-            description: Longitude            
-          - name: lat 
+            description: Longitude
+          - name: lat
             description: Latitude
           - name: measurement_time
-            description: The time of the measurement as a datetime stamp    
-          - name: aqi 
+            description: The time of the measurement as a datetime stamp
+          - name: aqi
             description: The Air Quality Index from 1-5. 1 represents the cleanest air.
-          - name: co 
+          - name: co
             description: Carbon monoxide concentration in μg/m3
           - name: 'no'
             description: Nitrogen monoxide concentration in μg/m3
-          - name: no2 
+          - name: no2
             description: Nitrogen dioxide concentration in μg/m3
           - name: o3
             description: Ozone concentration in μg/m3
-          - name: so2 
-            description: Sulphur dioxide concentration in μg/m3        
+          - name: so2
+            description: Sulphur dioxide concentration in μg/m3
           - name: pm2_5
             description: PM2.5 (particulate matter <= 2.5μm in diameter) concentration in μg/m3
           - name: pm10
             description: PM10 (particulate matter <= 10μm in diameter) concentration in μg/m3
           - name: nh3
-            description: Ammonia concentration in μg/m3    
+            description: Ammonia concentration in μg/m3
 
     - name: stg_finsbury_park_pollution_data
       description: >
@@ -67,30 +67,30 @@ models:
           - name: location
             description: Location name
           - name: lon
-            description: Longitude            
-          - name: lat 
+            description: Longitude
+          - name: lat
             description: Latitude
           - name: measurement_time
-            description: The time of the measurement as a datetime stamp 
-          - name: aqi 
+            description: The time of the measurement as a datetime stamp
+          - name: aqi
             description: The Air Quality Index from 1-5. 1 represents the cleanest air.
-          - name: co 
+          - name: co
             description: Carbon monoxide concentration in μg/m3
           - name: 'no'
             description: Nitrogen monoxide concentration in μg/m3
-          - name: no2 
+          - name: no2
             description: Nitrogen dioxide concentration in μg/m3
           - name: o3
             description: Ozone concentration in μg/m3
-          - name: so2 
-            description: Sulphur dioxide concentration in μg/m3        
+          - name: so2
+            description: Sulphur dioxide concentration in μg/m3
           - name: pm2_5
             description: PM2.5 (particulate matter <= 2.5μm in diameter) concentration in μg/m3
           - name: pm10
             description: PM10 (particulate matter <= 10μm in diameter) concentration in μg/m3
           - name: nh3
             description: Ammonia concentration in μg/m3
-             
+
 
     - name: stg_st_pauls_pollution_data
       description: >
@@ -106,31 +106,31 @@ models:
           - name: location
             description: Location name
           - name: lon
-            description: Longitude            
-          - name: lat 
+            description: Longitude
+          - name: lat
             description: Latitude
           - name: measurement_time
             description: The time of the measurement as a datetime stamp
-          - name: aqi 
+          - name: aqi
             description: The Air Quality Index from 1-5. 1 represents the cleanest air.
-          - name: co 
+          - name: co
             description: Carbon monoxide concentration in μg/m3
           - name: 'no'
             description: Nitrogen monoxide concentration in μg/m3
-          - name: no2 
+          - name: no2
             description: Nitrogen dioxide concentration in μg/m3
           - name: o3
             description: Ozone concentration in μg/m3
-          - name: so2 
-            description: Sulphur dioxide concentration in μg/m3        
+          - name: so2
+            description: Sulphur dioxide concentration in μg/m3
           - name: pm2_5
             description: PM2.5 (particulate matter <= 2.5μm in diameter) concentration in μg/m3
           - name: pm10
             description: PM10 (particulate matter <= 10μm in diameter) concentration in μg/m3
           - name: nh3
             description: Ammonia concentration in μg/m3
-              
-            
+
+
     - name: stg_wood_green_pollution_data
       description: >
         Pollutant levels over time for Wood Green high street.
@@ -145,28 +145,26 @@ models:
           - name: location
             description: Location name
           - name: lon
-            description: Longitude            
-          - name: lat 
+            description: Longitude
+          - name: lat
             description: Latitude
           - name: measurement_time
             description: The time of the measurement as a datetime stamp
-          - name: aqi 
+          - name: aqi
             description: The Air Quality Index from 1-5. 1 represents the cleanest air.
-          - name: co 
+          - name: co
             description: Carbon monoxide concentration in μg/m3
           - name: 'no'
             description: Nitrogen monoxide concentration in μg/m3
-          - name: no2 
+          - name: no2
             description: Nitrogen dioxide concentration in μg/m3
           - name: o3
             description: Ozone concentration in μg/m3
-          - name: so2 
-            description: Sulphur dioxide concentration in μg/m3        
+          - name: so2
+            description: Sulphur dioxide concentration in μg/m3
           - name: pm2_5
             description: PM2.5 (particulate matter <= 2.5μm in diameter) concentration in μg/m3
           - name: pm10
             description: PM10 (particulate matter <= 10μm in diameter) concentration in μg/m3
           - name: nh3
             description: Ammonia concentration in μg/m3
-   
-          
