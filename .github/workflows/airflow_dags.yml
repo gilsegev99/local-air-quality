@@ -1,0 +1,39 @@
+name: Airflow DAG Tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'airflow/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'airflow/**'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      AIRFLOW_HOME: ${{ github.workspace }}
+      API_KEY: fake_key
+      PYTHONPATH: ${{ github.workspace }}/airflow
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r airflow/requirements.txt
+          pip install pytest
+
+      - name: Run pytest
+        run: |
+          pytest airflow/tests/
