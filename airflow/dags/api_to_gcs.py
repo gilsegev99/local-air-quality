@@ -53,6 +53,10 @@ def format_response(coords, body):
     return data
 
 
+def get_location_list():
+    return pd.read_csv(f"{AIRFLOW_HOME}/data/location_list.csv")
+
+
 # Define DAG
 default_args = {
     "owner": "airflow",
@@ -66,7 +70,6 @@ NOW = get_current_time()
 # API Data available from 2020/11/27
 START = datetime_to_utcunix(datetime(2020, 12, 1))
 AIRFLOW_HOME = os.getenv("AIRFLOW_HOME")
-LOCATION_LIST = pd.read_csv(f"{AIRFLOW_HOME}/data/location_list.csv")
 
 
 @dag(default_args=default_args, schedule=None, catchup=False)
@@ -77,7 +80,7 @@ def openweather_to_gcs():
         dfs = []
         files = []
 
-        for index, row in LOCATION_LIST.iterrows():
+        for index, row in get_location_list().iterrows():
             lat = row["Latitude"]
             lon = row["Longitude"]
             location = row["Location"]
@@ -122,8 +125,11 @@ def openweather_to_gcs():
         if len(dataframes) != len(filenames):
             return None
 
+        output_dir = os.path.join(AIRFLOW_HOME, "tmp")
+        os.makedirs(output_dir, exist_ok=True)
+
         for i in range(len(dataframes)):
-            file_path = f"{AIRFLOW_HOME}/tmp/{filenames[i]}.parquet"
+            file_path = os.path.join(output_dir, f"{filenames[i]}.parquet")
             dataframes[i].to_parquet(file_path, engine="pyarrow")
             file_paths.append(file_path)
 

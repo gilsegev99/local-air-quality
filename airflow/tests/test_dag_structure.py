@@ -1,9 +1,7 @@
-from airflow.models import DagBag
+from dags.api_to_gcs import openweather_to_gcs
 
 
-def test_dag_loaded():
-    dag_bag = DagBag()
-    dag = dag_bag.get_dag("openweather_to_gcs")
-    assert dag is not None
+def test_dag_structure():
+    dag = openweather_to_gcs()
     assert dag.dag_id == "openweather_to_gcs"
     assert len(dag.tasks) == 3

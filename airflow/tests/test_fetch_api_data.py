@@ -29,8 +29,8 @@ def test_fetch_api_data():
     }
 
     with patch(
-        "dags.openweather_dag.LOCATION_LIST",
-        new=pd.DataFrame(
+        "dags.api_to_gcs.get_location_list",
+        new=lambda: pd.DataFrame(
             [{"Latitude": 10.0, "Longitude": -10.0, "Location": "TestLocation"}]
         ),
     ), patch("requests.get") as mock_get:
