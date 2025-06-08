@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 import pandas as pd
-from dags.openweather_dag import openweather_to_gcs
+from dags.api_to_gcs import openweather_to_gcs
 
 
 def test_fetch_api_data():

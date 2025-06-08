@@ -22,7 +22,7 @@ This project can be modified to extract and analyse data for any location to sui
 
 ## Architecture and Tools
 
-![Architecture Diagram](./docs/local_air_quality_architecture.png)
+![Architecture Diagram](./images/local_air_quality_architecture.png)
 
 | Layer           | Tool / Service                     | Purpose                                     |
 |----------------|------------------------------------|---------------------------------------------|
@@ -47,12 +47,12 @@ This project can be modified to extract and analyse data for any location to sui
 2. **Transformation**
    - `dbt` models raw data within **BigQuery**, applying logic like deduplication, enrichment, and timestamp conversion.
 
-![DBT Lineage](./docs/local_air_quality_dbt_lineage.png)
+![DBT Lineage](./images/local_air_quality_dbt_lineage.png)
 
 3. **Visualisation**
    - Cleaned datasets are explored using **Looker Studio**, enabling analysis by location, pollutant, and time.
 
-![Looker Studio Dashboard](./docs/dashboard.png)
+![Looker Studio Dashboard](./images/dashboard.png)
 
 ---
 

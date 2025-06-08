@@ -1,4 +1,4 @@
-from dags.openweather_dag import format_response
+from dags.api_to_gcs import format_response
 
 
 def test_format_response_valid():
