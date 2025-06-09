@@ -1,12 +1,10 @@
 # 🏙️ Local Air Quality Data Engineering Pipeline (wip)
 
-> A data engineering project to monitor and visualise air quality in areas of London that are personally relevant using modern tools like Airflow, dbt, BigQuery, and Looker Studio on Google Cloud.
+> A data engineering project to monitor and visualise air quality in areas of London that are personally relevant using modern tools like Airflow, dbt, BigQuery, and Looker Studio.
 
 ![Build](https://img.shields.io/badge/status-active-brightgreen)
 ![GCP](https://img.shields.io/badge/cloud-Google--Cloud-blue)
-![Licence: MIT](https://img.shields.io/badge/licence-MIT-lightgrey)
 
----
 
 ## Project Background
 
@@ -18,7 +16,6 @@ Air quality can significantly impact health and wellbeing, particularly in citie
 
 This project can be modified to extract and analyse data for any location to suit the user's interests.
 
----
 
 ## Architecture and Tools
 
@@ -36,7 +33,6 @@ This project can be modified to extract and analyse data for any location to sui
 
 > **Keywords**: data engineering, air quality, GCP, Apache Airflow, dbt, BigQuery, Looker Studio, ETL pipeline, Terraform, London air pollution
 
----
 
 ## Data Flow Summary
 
@@ -45,7 +41,7 @@ This project can be modified to extract and analyse data for any location to sui
    - Data is serialised and stored in **Google Cloud Storage** as parquet files.
 
 2. **Transformation**
-   - `dbt` models raw data within **BigQuery**, applying logic like deduplication, enrichment, and timestamp conversion.
+   - `dbt` models raw data within **BigQuery**, applying logic like deduplication and timestamp conversion.
 
 ![DBT Lineage](./images/local_air_quality_dbt_lineage.png)
 
@@ -54,13 +50,11 @@ This project can be modified to extract and analyse data for any location to sui
 
 ![Looker Studio Dashboard](./images/dashboard.png)
 
----
 
 ##
 
 Instructions for setting up the environment, deploying infrastructure with Terraform, running Airflow, and managing dbt models will be provided in the Setup section below.
 
----
 
 ## Future Improvements
 
@@ -68,19 +62,10 @@ Instructions for setting up the environment, deploying infrastructure with Terra
 - Schedule hourly pipline runs to update the dashboard in line with the API data frequency.
 - Encompass DBT transformation in Airflow DAG.
 - Add data quality tests e.g. anomaly detection and threshold-based alerts.
-- Implement CI/CD for pipeline updates.
+- Implement CI/CD for pipeline updates .
 - Allow for more seamless changes to air quality measurment locations.
 - Enrich data with local weather information.
 
----
-
-## Acknowledgements
-
-- [OpenWeather](https://openweathermap.org/) for free API access.
-- Open-source contributors to Airflow, dbt, Terraform, and the GCP ecosystem.
-- [DataTalksClub](https://datatalks.club/) for inspiration and learning material.
-
----
 
 ## Setup & Deployment
 
@@ -89,20 +74,27 @@ Instructions for setting up the environment, deploying infrastructure with Terra
 
 The following instructions can be performed in any Ubuntu distribution. I used a WSL2 instance on my local machine for the intial project set up. I am yet to add Windows/macOS setup instructions.
 
-Clone the repository in your local machine.
+1. Clone the repository in your local machine.
 
 ```bash
 git clone https://github.com/gilsegev99/local-air-quality.git
 ```
 
-If you already have a Google Cloud account and a working terraform setup, you can skip the pre-requisite steps.
-
-- Google Cloud Platform.
-  - [GCP Account and Access Setup](setup/gcp.md)
+2. Set up your Google Cloud Platform account and project - [GCP Account and Access Setup](setup/gcp.md)
 
 
-- Procure infra on GCP with Terraform - [Setup](setup/terraform.md)
+3. Procure infra on GCP with Terraform - [Terraform Setup](setup/terraform.md)
 
-# Setup Infrastructure
+4. In Compute Engine, spin up Airflow with Docker Compose and trigger the pipeline - [Airflow Setup](setup/airflow.md)
+
+5. Set up your dbt project and transform the ingested data - [dbt Setup](setup/dbt.md)
+
 
 #### [Setup Reference - Ankur Chavda](https://github.com/ankurchavda/streamify/README.md)
+
+
+## Acknowledgements
+
+- [OpenWeather](https://openweathermap.org/) for free API access.
+- Open-source contributors to Airflow, dbt, Terraform, and the GCP ecosystem.
+- [DataTalksClub](https://datatalks.club/) for inspiration and learning material.
