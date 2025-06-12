@@ -1,6 +1,6 @@
 variable "credentials" {
   description = "Local Air Quality Credentials"
-  default     = "/home/gilsegev/keys/local-air-quality.json"
+  default     = "REPLACE_ME_WITH_CREDENTIALS_PATH"
 }
 
 
@@ -32,4 +32,46 @@ variable "gcs_bucket_name" {
 variable "gcs_storage_class" {
   description = "Bucket Storage Class"
   default     = "STANDARD"
+}
+
+variable "vm_name" {
+  description = "Name of the VM instance"
+  type        = string
+  default     = "local-air-quality"
+}
+
+variable "vm_machine_type" {
+  description = "Machine type"
+  type        = string
+  default     = "e2-standard-4"
+}
+
+variable "zone" {
+  description = "The zone to deploy the VM in"
+  type        = string
+  default     = "europe-west2-b"
+}
+
+variable "vm_boot_image" {
+  description = "The boot image to use"
+  type        = string
+  default     = "ubuntu-2004-lts"
+}
+
+variable "vm_disk_size_gb" {
+  description = "Boot disk size in GB"
+  type        = number
+  default     = 30
+}
+
+variable "vm_startup_script" {
+  description = "Startup script to be run on VM boot"
+  type        = string
+  default     = ""
+}
+
+variable "vm_tags" {
+  description = "Network tags for the VM"
+  type        = list(string)
+  default     = []
 }
