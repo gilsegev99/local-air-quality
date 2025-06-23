@@ -6,7 +6,7 @@ import pandas as pd
 import pytz
 import requests
 from airflow.decorators import dag, task
-from google.cloud import storage
+from google.cloud import bigquery, storage
 
 API_KEY = os.getenv("API_KEY")
 GCS_BUCKET = "local-air-quality-bucket"
@@ -55,6 +55,43 @@ def format_response(coords, body):
 
 def get_location_list():
     return pd.read_csv(f"{AIRFLOW_HOME}/data/location_list.csv")
+
+
+def get_last_ingestion_timestamp() -> int:
+    client = bigquery.Client()
+
+    query = """
+    SELECT last_ingested_at
+    FROM `local-air-quality-454807.local_air_quality.metadata_ingestion_tracker`
+    LIMIT 1
+    """
+
+    result = client.query(query).result()
+    row = next(iter(result), None)
+
+    if row and row.last_ingested_at:
+        return row.last_ingested_at
+    else:
+        # Default to some past date if no record exists yet
+        return 0
+
+
+def update_last_ingestion_time():
+
+    client = bigquery.Client()
+
+    query = f"""
+    MERGE `local-air-quality-454807.local_air_quality.metadata_ingestion_tracker` T
+    USING (SELECT {get_current_time()} AS last_ingested_at,
+            CURRENT_TIMESTAMP() AS updated_at) S
+    ON TRUE
+    WHEN MATCHED THEN
+        UPDATE SET last_ingested_at = S.last_ingested_at, updated_at = S.updated_at
+    WHEN NOT MATCHED THEN
+        INSERT (last_ingested_at, updated_at)
+        VALUES(S.last_ingested_at, S.updated_at)
+    """
+    client.query(query).result()
 
 
 # Define DAG
