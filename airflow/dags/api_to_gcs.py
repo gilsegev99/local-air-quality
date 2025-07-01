@@ -72,8 +72,8 @@ def get_last_ingestion_timestamp() -> int:
     if row and row.last_ingested_at:
         return row.last_ingested_at
     else:
-        # Default to some past date if no record exists yet
-        return 0
+        # Default to earliest date if no record exists yet
+        return START
 
 
 def update_last_ingestion_time():
@@ -82,7 +82,7 @@ def update_last_ingestion_time():
 
     query = f"""
     MERGE `local-air-quality-454807.local_air_quality.metadata_ingestion_tracker` T
-    USING (SELECT {get_current_time()} AS last_ingested_at,
+    USING (SELECT {NOW} AS last_ingested_at,
             CURRENT_TIMESTAMP() AS updated_at) S
     ON TRUE
     WHEN MATCHED THEN
@@ -113,6 +113,15 @@ AIRFLOW_HOME = os.getenv("AIRFLOW_HOME")
 def openweather_to_gcs():
 
     @task
+    def retrieve_last_ingestion_time():
+        try:
+            ingestion_time = get_last_ingestion_timestamp()
+        except Exception:
+            print("Failed to retrieve last ingestion time, defaulting to 2020/12/1")
+
+        return ingestion_time
+
+    @task
     def fetch_api_data(start, end, api_key, **kwargs):
         dfs = []
         files = []
@@ -122,8 +131,10 @@ def openweather_to_gcs():
             lon = row["Longitude"]
             location = row["Location"]
 
-            api_url = f"http://api.openweathermap.org/data/2.5/air_pollution/history? \
-                        lat={lat}&lon={lon}&start={start}&end={end}&appid={api_key}"
+            api_url = (
+                f"http://api.openweathermap.org/data/2.5/air_pollution/history?"
+                f"lat={lat}&lon={lon}&start={start}&end={end}&appid={api_key}"
+            )
 
             try:
                 logger.info(f"Requesting data for {location}")
@@ -148,6 +159,8 @@ def openweather_to_gcs():
                 files.append(file_name)
 
                 logger.info(f"Successfully retrieved {len(df)} records for {location}")
+
+                update_last_ingestion_time()
 
             except requests.exceptions.HTTPError as http_err:
                 logger.error(f"HTTP error for {location}: {http_err}")
@@ -186,7 +199,8 @@ def openweather_to_gcs():
 
     # Set task dependencies
 
-    objects = fetch_api_data(START, NOW, API_KEY)
+    start = retrieve_last_ingestion_time()
+    objects = fetch_api_data(start, NOW, API_KEY)
     file_paths = convert_to_pq(objects)
     upload_to_gcs(file_paths)
 
