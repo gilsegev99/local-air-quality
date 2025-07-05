@@ -197,12 +197,38 @@ def openweather_to_gcs():
             blob.upload_from_filename(file_path)
             os.remove(file_path)  # Clean up
 
+        return [os.path.basename(file_path) for file_path in file_paths]
+
+    @task
+    def load_gcs_to_bigquery(filenames):
+        client = bigquery.Client()
+
+        job_config = bigquery.LoadJobConfig(
+            source_format=bigquery.SourceFormat.PARQUET,
+            write_disposition=bigquery.WriteDisposition.WRITE_APPEND,
+            autodetect=True,
+        )
+
+        for filename in filenames:
+            uri = f"gs://local-air-quality-bucket/{filename}"
+
+            table_name = f"raw_{filename.split('_')[2].lower()}"
+            table_id = f"local-air-quality-454807.local_air_quality.{table_name}"
+
+            load_job = client.load_table_from_uri(
+                uri, table_id, job_config=job_config
+            )  # Make an API request.
+
+            load_job.result()  # Wait for job to end
+            print(f"Loaded {load_job.output_rows} rows into {table_id}")
+
     # Set task dependencies
 
     start = retrieve_last_ingestion_time()
     objects = fetch_api_data(start, NOW, API_KEY)
     file_paths = convert_to_pq(objects)
-    upload_to_gcs(file_paths)
+    file_names = upload_to_gcs(file_paths)
+    load_gcs_to_bigquery(file_names)
 
 
 extract_data = openweather_to_gcs()
