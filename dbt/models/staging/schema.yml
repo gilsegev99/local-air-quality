@@ -6,10 +6,10 @@ sources:
     schema: "{{ env_var('DBT_SCHEMA', 'local_air_quality') }}"
       # loaded_at_field: record_loaded_at
     tables:
-      - name: finchley_ext
-      - name: finsbury_park_ext
-      - name: st_pauls_ext
-      - name: wood_green_ext
+      - name: raw_finchley
+      - name: raw_finsburypark
+      - name: raw_stpauls
+      - name: raw_woodgreen
 
          # freshness:
            # error_after: {count: 6, period: hour}
