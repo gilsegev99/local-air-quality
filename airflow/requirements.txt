@@ -4,4 +4,3 @@ pandas
 requests
 pytz
 pyarrow
-google-cloud-bigquery==3.34.0
