@@ -8,13 +8,13 @@
     cluster_by = ['location']
 ) }}
 
-SELECT * FROM {{ ref('stg_finchley_pol_data') }}
+SELECT * FROM {{ ref('stg_finchley_pollution_data') }}
 UNION ALL
-SELECT * FROM {{ ref('stg_finsburypark_pol_data') }}
+SELECT * FROM {{ ref('stg_finsbury_park_pollution_data') }}
 UNION ALL
-SELECT * FROM {{ ref('stg_stpauls_pol_data') }}
+SELECT * FROM {{ ref('stg_st_pauls_pollution_data') }}
 UNION ALL
-SELECT * FROM {{ ref('stg_woodgreen_pol_data') }}
+SELECT * FROM {{ ref('stg_wood_green_pollution_data') }}
 
 
 {% if is_incremental() %}
