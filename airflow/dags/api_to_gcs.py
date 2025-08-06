@@ -160,10 +160,10 @@ def openweather_to_gcs():
 
                 logger.info(f"Successfully retrieved {len(df)} records for {location}")
 
-                update_last_ingestion_time()
-
             except requests.exceptions.HTTPError as http_err:
                 logger.error(f"HTTP error for {location}: {http_err}")
+
+        update_last_ingestion_time()
 
         return dfs, files
 
