@@ -3,168 +3,202 @@ version: 2
 sources:
   - name: staging
     database: "{{ env_var('DBT_DATABASE', 'local-air-quality-454807') }}"
-    schema: "{{ env_var('DBT_SCHEMA', 'local_air_quality') }}"
+    schema:
+      "{{ env_var('DBT_SCHEMA', 'local_air_quality') }}"
       # loaded_at_field: record_loaded_at
     tables:
-      - name: finchley_ext
-      - name: finsbury_park_ext
-      - name: st_pauls_ext
-      - name: wood_green_ext
-
-         # freshness:
-           # error_after: {count: 6, period: hour}
+      - name: raw_finchley
+      - name: raw_finsburypark
+      - name: raw_stpauls
+      - name: raw_woodgreen
+          # freshness:
+          # error_after: {count: 6, period: hour}
 
 models:
-    - name: stg_finchley_pollution_data
-      description: >
-        Pollutant levels over time for Finchley high street.
-      columns:
-          - name: measurementid
-            description: The primary key for this table, determined by the latitude, longitude and measurement time.
-            tests:
-                - unique:
-                    severity: warn
-                - not_null:
-                    severity: warn
-          - name: location
-            description: Location name
-          - name: lon
-            description: Longitude
-          - name: lat
-            description: Latitude
-          - name: measurement_time
-            description: The time of the measurement as a datetime stamp
-          - name: aqi
-            description: The Air Quality Index from 1-5. 1 represents the cleanest air.
-          - name: co
-            description: Carbon monoxide concentration in μg/m3
-          - name: 'no'
-            description: Nitrogen monoxide concentration in μg/m3
-          - name: no2
-            description: Nitrogen dioxide concentration in μg/m3
-          - name: o3
-            description: Ozone concentration in μg/m3
-          - name: so2
-            description: Sulphur dioxide concentration in μg/m3
-          - name: pm2_5
-            description: PM2.5 (particulate matter <= 2.5μm in diameter) concentration in μg/m3
-          - name: pm10
-            description: PM10 (particulate matter <= 10μm in diameter) concentration in μg/m3
-          - name: nh3
-            description: Ammonia concentration in μg/m3
+  - name: stg_finchley_pollution_data
+    description: >
+      Pollutant levels over time for Finchley high street.
+    columns:
+      - name: measurementid
+        description: The primary key for this table, determined by the latitude, longitude and measurement time.
+        tests:
+          - unique:
+              severity: warn
+          - not_null:
+              severity: warn
+      - name: location
+        description: Location name
+      - name: lon
+        description: Longitude
+      - name: lat
+        description: Latitude
+      - name: measurement_time
+        description: The time of the measurement as a datetime stamp
+      - name: aqi
+        description: The Air Quality Index from 1-5. 1 represents the cleanest air.
+        tests:
+          - accepted_values:
+              values: [1, 2, 3, 4, 5]
+              quote: false
+              config:
+                severity: warn
+      - name: aqi_category
+        description: The Air Quality Category.
+      - name: co
+        description: Carbon monoxide concentration in μg/m3
+      - name: 'no'
+        description: Nitrogen monoxide concentration in μg/m3
+        quote: true
+      - name: no2
+        description: Nitrogen dioxide concentration in μg/m3
+      - name: o3
+        description: Ozone concentration in μg/m3
+      - name: so2
+        description: Sulphur dioxide concentration in μg/m3
+      - name: pm2_5
+        description: PM2.5 (particulate matter <= 2.5μm in diameter) concentration in μg/m3
+      - name: pm10
+        description: PM10 (particulate matter <= 10μm in diameter) concentration in μg/m3
+      - name: nh3
+        description: Ammonia concentration in μg/m3
 
-    - name: stg_finsbury_park_pollution_data
-      description: >
-        Pollutant levels over time for Finsbury Park high street.
-      columns:
-          - name: measurementid
-            description: The primary key for this table, determined by the latitude, longitude and measurement time.
-            tests:
-                - unique:
-                    severity: warn
-                - not_null:
-                    severity: warn
-          - name: location
-            description: Location name
-          - name: lon
-            description: Longitude
-          - name: lat
-            description: Latitude
-          - name: measurement_time
-            description: The time of the measurement as a datetime stamp
-          - name: aqi
-            description: The Air Quality Index from 1-5. 1 represents the cleanest air.
-          - name: co
-            description: Carbon monoxide concentration in μg/m3
-          - name: 'no'
-            description: Nitrogen monoxide concentration in μg/m3
-          - name: no2
-            description: Nitrogen dioxide concentration in μg/m3
-          - name: o3
-            description: Ozone concentration in μg/m3
-          - name: so2
-            description: Sulphur dioxide concentration in μg/m3
-          - name: pm2_5
-            description: PM2.5 (particulate matter <= 2.5μm in diameter) concentration in μg/m3
-          - name: pm10
-            description: PM10 (particulate matter <= 10μm in diameter) concentration in μg/m3
-          - name: nh3
-            description: Ammonia concentration in μg/m3
+  - name: stg_finsbury_park_pollution_data
+    description: >
+      Pollutant levels over time for Finsbury Park high street.
+    columns:
+      - name: measurementid
+        description: The primary key for this table, determined by the latitude, longitude and measurement time.
+        tests:
+          - unique:
+              severity: warn
+          - not_null:
+              severity: warn
+      - name: location
+        description: Location name
+      - name: lon
+        description: Longitude
+      - name: lat
+        description: Latitude
+      - name: measurement_time
+        description: The time of the measurement as a datetime stamp
+      - name: aqi
+        description: The Air Quality Index from 1-5. 1 represents the cleanest air.
+        tests:
+          - accepted_values:
+              values: [1, 2, 3, 4, 5]
+              quote: false
+              config:
+                severity: warn
+      - name: aqi_category
+        description: The Air Quality Category.
+      - name: co
+        description: Carbon monoxide concentration in μg/m3
+      - name: 'no'
+        description: Nitrogen monoxide concentration in μg/m3
+        quote: true
+      - name: no2
+        description: Nitrogen dioxide concentration in μg/m3
+      - name: o3
+        description: Ozone concentration in μg/m3
+      - name: so2
+        description: Sulphur dioxide concentration in μg/m3
+      - name: pm2_5
+        description: PM2.5 (particulate matter <= 2.5μm in diameter) concentration in μg/m3
+      - name: pm10
+        description: PM10 (particulate matter <= 10μm in diameter) concentration in μg/m3
+      - name: nh3
+        description: Ammonia concentration in μg/m3
 
+  - name: stg_st_pauls_pollution_data
+    description: >
+      Pollutant levels over time outside St Paul's Cathedral.
+    columns:
+      - name: measurementid
+        description: The primary key for this table, determined by the latitude, longitude and measurement time.
+        tests:
+          - unique:
+              severity: warn
+          - not_null:
+              severity: warn
+      - name: location
+        description: Location name
+      - name: lon
+        description: Longitude
+      - name: lat
+        description: Latitude
+      - name: measurement_time
+        description: The time of the measurement as a datetime stamp
+      - name: aqi
+        description: The Air Quality Index from 1-5. 1 represents the cleanest air.
+        tests:
+          - accepted_values:
+              values: [1, 2, 3, 4, 5]
+              quote: false
+              config:
+                severity: warn
+      - name: aqi_category
+        description: The Air Quality Category.
+      - name: co
+        description: Carbon monoxide concentration in μg/m3
+      - name: 'no'
+        description: Nitrogen monoxide concentration in μg/m3
+        quote: true
+      - name: no2
+        description: Nitrogen dioxide concentration in μg/m3
+      - name: o3
+        description: Ozone concentration in μg/m3
+      - name: so2
+        description: Sulphur dioxide concentration in μg/m3
+      - name: pm2_5
+        description: PM2.5 (particulate matter <= 2.5μm in diameter) concentration in μg/m3
+      - name: pm10
+        description: PM10 (particulate matter <= 10μm in diameter) concentration in μg/m3
+      - name: nh3
+        description: Ammonia concentration in μg/m3
 
-    - name: stg_st_pauls_pollution_data
-      description: >
-        Pollutant levels over time outside St Paul's Cathedral.
-      columns:
-          - name: measurementid
-            description: The primary key for this table, determined by the latitude, longitude and measurement time.
-            tests:
-                - unique:
-                    severity: warn
-                - not_null:
-                    severity: warn
-          - name: location
-            description: Location name
-          - name: lon
-            description: Longitude
-          - name: lat
-            description: Latitude
-          - name: measurement_time
-            description: The time of the measurement as a datetime stamp
-          - name: aqi
-            description: The Air Quality Index from 1-5. 1 represents the cleanest air.
-          - name: co
-            description: Carbon monoxide concentration in μg/m3
-          - name: 'no'
-            description: Nitrogen monoxide concentration in μg/m3
-          - name: no2
-            description: Nitrogen dioxide concentration in μg/m3
-          - name: o3
-            description: Ozone concentration in μg/m3
-          - name: so2
-            description: Sulphur dioxide concentration in μg/m3
-          - name: pm2_5
-            description: PM2.5 (particulate matter <= 2.5μm in diameter) concentration in μg/m3
-          - name: pm10
-            description: PM10 (particulate matter <= 10μm in diameter) concentration in μg/m3
-          - name: nh3
-            description: Ammonia concentration in μg/m3
-
-
-    - name: stg_wood_green_pollution_data
-      description: >
-        Pollutant levels over time for Wood Green high street.
-      columns:
-          - name: measurementid
-            description: The primary key for this table, determined by the latitude, longitude and measurement time.
-            tests:
-                - unique:
-                    severity: warn
-                - not_null:
-                    severity: warn
-          - name: location
-            description: Location name
-          - name: lon
-            description: Longitude
-          - name: lat
-            description: Latitude
-          - name: measurement_time
-            description: The time of the measurement as a datetime stamp
-          - name: aqi
-            description: The Air Quality Index from 1-5. 1 represents the cleanest air.
-          - name: co
-            description: Carbon monoxide concentration in μg/m3
-          - name: 'no'
-            description: Nitrogen monoxide concentration in μg/m3
-          - name: no2
-            description: Nitrogen dioxide concentration in μg/m3
-          - name: o3
-            description: Ozone concentration in μg/m3
-          - name: so2
-            description: Sulphur dioxide concentration in μg/m3
-          - name: pm2_5
-            description: PM2.5 (particulate matter <= 2.5μm in diameter) concentration in μg/m3
-          - name: pm10
-            description: PM10 (particulate matter <= 10μm in diameter) concentration in μg/m3
-          - name: nh3
-            description: Ammonia concentration in μg/m3
+  - name: stg_wood_green_pollution_data
+    description: >
+      Pollutant levels over time for Wood Green high street.
+    columns:
+      - name: measurementid
+        description: The primary key for this table, determined by the latitude, longitude and measurement time.
+        tests:
+          - unique:
+              severity: warn
+          - not_null:
+              severity: warn
+      - name: location
+        description: Location name
+      - name: lon
+        description: Longitude
+      - name: lat
+        description: Latitude
+      - name: measurement_time
+        description: The time of the measurement as a datetime stamp
+      - name: aqi
+        description: The Air Quality Index from 1-5. 1 represents the cleanest air.
+        tests:
+          - accepted_values:
+              values: [1, 2, 3, 4, 5]
+              quote: false
+              config:
+                severity: warn
+      - name: aqi_category
+        description: The Air Quality Category.
+      - name: co
+        description: Carbon monoxide concentration in μg/m3
+      - name: 'no'
+        description: Nitrogen monoxide concentration in μg/m3
+        quote: true
+      - name: no2
+        description: Nitrogen dioxide concentration in μg/m3
+      - name: o3
+        description: Ozone concentration in μg/m3
+      - name: so2
+        description: Sulphur dioxide concentration in μg/m3
+      - name: pm2_5
+        description: PM2.5 (particulate matter <= 2.5μm in diameter) concentration in μg/m3
+      - name: pm10
+        description: PM10 (particulate matter <= 10μm in diameter) concentration in μg/m3
+      - name: nh3
+        description: Ammonia concentration in μg/m3

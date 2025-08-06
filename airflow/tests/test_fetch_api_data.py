@@ -28,12 +28,19 @@ def test_fetch_api_data():
         ],
     }
 
-    with patch(
-        "dags.api_to_gcs.get_location_list",
-        new=lambda: pd.DataFrame(
-            [{"Latitude": 10.0, "Longitude": -10.0, "Location": "TestLocation"}]
+    with (
+        patch(
+            "dags.api_to_gcs.get_location_list",
+            new=lambda: pd.DataFrame(
+                [{"Latitude": 10.0, "Longitude": -10.0, "Location": "TestLocation"}]
+            ),
         ),
-    ), patch("requests.get") as mock_get:
+        patch("requests.get") as mock_get,
+        patch(
+            "dags.api_to_gcs.update_last_ingestion_time"
+        ) as mock_update_ingestion_time,
+    ):
+
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = mock_response
 
@@ -47,3 +54,5 @@ def test_fetch_api_data():
         assert df.iloc[0]["co"] == 0.1
         assert df.iloc[0]["aqi"] == "2"
         assert df.iloc[0]["lat"] == "-10.0"
+
+        mock_update_ingestion_time.assert_called_once()

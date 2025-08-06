@@ -1,5 +1,6 @@
 apache-airflow==2.10.5
 google-cloud-storage
+google-cloud-bigquery==3.34.0
 pandas
 requests
 pytz

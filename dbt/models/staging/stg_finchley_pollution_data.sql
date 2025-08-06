@@ -1,9 +1,9 @@
 
 with pollutiondata as (
     select *,
-        'StPauls' as location,
+        'Finchley' as location,
         row_number() over(partition by lon, lat, `time`) as rn
-    from {{ source('staging', 'st_pauls_ext')}}
+    from {{ source('staging', 'raw_finchley')}}
     where lon is not null
         and lat is not null
         and `time` is not null

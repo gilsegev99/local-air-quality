@@ -6,7 +6,7 @@ import pandas as pd
 import pytz
 import requests
 from airflow.decorators import dag, task
-from google.cloud import storage
+from google.cloud import bigquery, storage
 
 API_KEY = os.getenv("API_KEY")
 GCS_BUCKET = "local-air-quality-bucket"
@@ -57,6 +57,43 @@ def get_location_list():
     return pd.read_csv(f"{AIRFLOW_HOME}/data/location_list.csv")
 
 
+def get_last_ingestion_timestamp() -> int:
+    client = bigquery.Client()
+
+    query = """
+    SELECT last_ingested_at
+    FROM `local-air-quality-454807.local_air_quality.metadata_ingestion_tracker`
+    LIMIT 1
+    """
+
+    result = client.query(query).result()
+    row = next(iter(result), None)
+
+    if row and row.last_ingested_at:
+        return row.last_ingested_at
+    else:
+        # Default to earliest date if no record exists yet
+        return START
+
+
+def update_last_ingestion_time():
+
+    client = bigquery.Client()
+
+    query = f"""
+    MERGE `local-air-quality-454807.local_air_quality.metadata_ingestion_tracker` T
+    USING (SELECT {NOW} AS last_ingested_at,
+            CURRENT_TIMESTAMP() AS updated_at) S
+    ON TRUE
+    WHEN MATCHED THEN
+        UPDATE SET last_ingested_at = S.last_ingested_at, updated_at = S.updated_at
+    WHEN NOT MATCHED THEN
+        INSERT (last_ingested_at, updated_at)
+        VALUES(S.last_ingested_at, S.updated_at)
+    """
+    client.query(query).result()
+
+
 # Define DAG
 default_args = {
     "owner": "airflow",
@@ -76,6 +113,15 @@ AIRFLOW_HOME = os.getenv("AIRFLOW_HOME")
 def openweather_to_gcs():
 
     @task
+    def retrieve_last_ingestion_time():
+        try:
+            ingestion_time = get_last_ingestion_timestamp()
+        except Exception:
+            print("Failed to retrieve last ingestion time, defaulting to 2020/12/1")
+
+        return ingestion_time
+
+    @task
     def fetch_api_data(start, end, api_key, **kwargs):
         dfs = []
         files = []
@@ -85,8 +131,10 @@ def openweather_to_gcs():
             lon = row["Longitude"]
             location = row["Location"]
 
-            api_url = f"http://api.openweathermap.org/data/2.5/air_pollution/history? \
-                        lat={lat}&lon={lon}&start={start}&end={end}&appid={api_key}"
+            api_url = (
+                f"http://api.openweathermap.org/data/2.5/air_pollution/history?"
+                f"lat={lat}&lon={lon}&start={start}&end={end}&appid={api_key}"
+            )
 
             try:
                 logger.info(f"Requesting data for {location}")
@@ -114,6 +162,8 @@ def openweather_to_gcs():
 
             except requests.exceptions.HTTPError as http_err:
                 logger.error(f"HTTP error for {location}: {http_err}")
+
+        update_last_ingestion_time()
 
         return dfs, files
 
@@ -147,11 +197,38 @@ def openweather_to_gcs():
             blob.upload_from_filename(file_path)
             os.remove(file_path)  # Clean up
 
+        return [os.path.basename(file_path) for file_path in file_paths]
+
+    @task
+    def load_gcs_to_bigquery(filenames):
+        client = bigquery.Client()
+
+        job_config = bigquery.LoadJobConfig(
+            source_format=bigquery.SourceFormat.PARQUET,
+            write_disposition=bigquery.WriteDisposition.WRITE_APPEND,
+            autodetect=True,
+        )
+
+        for filename in filenames:
+            uri = f"gs://local-air-quality-bucket/{filename}"
+
+            table_name = f"raw_{filename.split('_')[2].lower()}"
+            table_id = f"local-air-quality-454807.local_air_quality.{table_name}"
+
+            load_job = client.load_table_from_uri(
+                uri, table_id, job_config=job_config
+            )  # Make an API request.
+
+            load_job.result()  # Wait for job to end
+            print(f"Loaded {load_job.output_rows} rows into {table_id}")
+
     # Set task dependencies
 
-    objects = fetch_api_data(START, NOW, API_KEY)
+    start = retrieve_last_ingestion_time()
+    objects = fetch_api_data(start, NOW, API_KEY)
     file_paths = convert_to_pq(objects)
-    upload_to_gcs(file_paths)
+    file_names = upload_to_gcs(file_paths)
+    load_gcs_to_bigquery(file_names)
 
 
 extract_data = openweather_to_gcs()
